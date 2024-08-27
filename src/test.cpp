@@ -38,7 +38,6 @@ int main()
 	}
 	std::cout << "Time after being stoped for 1 second (1): " << time << "\n";
 	
-
 	// resume, sleep for 1 second
 	(void) my_clock.resume_timer();
 	delay.start_timer();

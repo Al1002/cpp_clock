@@ -38,7 +38,7 @@
 void Clock::start_timer()
 {
     stopped = false;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &present);
+    clock_gettime(CLOCK_REALTIME, &present);
     past = present;
 }
 
@@ -56,7 +56,7 @@ double Clock::stop_timer()
     if (stopped)
         return 0;
     stopped = true;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &stop); // get delta w/o deleting `present`
+    clock_gettime(CLOCK_REALTIME, &stop); // get delta w/o deleting `present`
     delta = (stop.tv_sec - past.tv_sec) + (double)(stop.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
     return (stop.tv_sec - present.tv_sec) + (double)(stop.tv_nsec - present.tv_nsec) / NANOS_PER_SEC;
 }
@@ -70,7 +70,7 @@ double Clock::get_time()
 {
     if (stopped)
         return delta;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &present);
+    clock_gettime(CLOCK_REALTIME, &present);
     return (present.tv_sec - past.tv_sec) + (double)(present.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
 }
 
@@ -88,7 +88,7 @@ double Clock::resume_timer()
         return 0;
     stopped = false;
     timespec temp;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &temp); // get delta w/o deleting other times
+    clock_gettime(CLOCK_REALTIME, &temp); // get delta w/o deleting other times
     delta = (temp.tv_sec - stop.tv_sec) + (double)(temp.tv_nsec - stop.tv_nsec) / NANOS_PER_SEC;
     present.tv_sec += temp.tv_sec - stop.tv_sec; // adjust `present`
     present.tv_nsec += temp.tv_nsec - stop.tv_nsec;
@@ -123,24 +123,25 @@ double Clock::resume_timer()
  *
  * @param tick_durration The time to wait, in secconds
  */
-double Clock::delta_time(double tick_durration)
+double Clock::delta_time(double tick_durration = -1)
 {
     if (stopped)
         return delta;
     if (tick_durration == -1)
     {
-        clock_gettime(CLOCK_MONOTONIC_RAW, &present);
+        clock_gettime(CLOCK_REALTIME, &present);
         return 0;
     }
     past = present;
+    timespec wait_for = {(long)tick_durration, (tick_durration - (long)tick_durration) * NANOS_PER_SEC};
     while (true)
     {
-        clock_gettime(CLOCK_MONOTONIC_RAW, &present);
-        delta = (present.tv_sec - past.tv_sec) + (double)(present.tv_nsec - past.tv_nsec) / NANOS_PER_SEC; // remove floating point math where u can, or dont, dun matter
-        if (delta < tick_durration - 0.000001)                                                             // if we have time remaining more than 1micros, sleep
-            usleep((tick_durration - delta - 0.000001) * MICROS_PER_SEC);
-        if (delta > tick_durration)
+        int code = clock_nanosleep(CLOCK_REALTIME, 0, &wait_for, NULL); 
+        if(code == 0)
             break;
+        else
+            throw code;
     }
+    
     return delta;
 }

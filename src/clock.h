@@ -38,8 +38,8 @@
  */
 class Clock
 {
-	const int NANOS_PER_SEC = 1000000000;
-	const int MICROS_PER_SEC = 1000000;
+	const static long NANOS_PER_SEC = 1000000000;
+	const static long MICROS_PER_SEC = 1000000;
 	timespec past, present, stop;
 	double delta;
 	bool stopped = false;
@@ -98,5 +98,6 @@ public:
 	 * @param tick_durration The time to wait, in secconds
 	 */
 	double delta_time(double tick_durration);
+
 
 };
