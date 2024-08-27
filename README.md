@@ -1,4 +1,4 @@
-# CPP CLOCK (V1.0)
+# CPP CLOCK (V1.1)
 
 A C++ Unix-based class for tracking real time.
 
