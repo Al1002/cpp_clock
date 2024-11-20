@@ -11,7 +11,7 @@ Sample usage provided in src/test.cpp
 
 Includes CMake files for compiling and running the test file.
 
-Compiled library + header in output.zip
+Already compiled library + header in output.zip. Note: May not work with your environment.
 
 Created by Bicepsa (github.com/Al1002)
 

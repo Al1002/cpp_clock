@@ -119,7 +119,7 @@ double Clock::resume_timer()
  * @return The time elapsed between function calls
  *
  * @note
- * Uses `usleep()` to block the thread while waiting.
+ * Uses `nanosleep()` to block the thread while waiting.
  *
  * @param tick_durration The time to wait, in secconds
  */
@@ -133,15 +133,14 @@ double Clock::delta_time(double tick_durration = -1)
         return 0;
     }
     past = present;
-    timespec wait_for = {(long)tick_durration, (tick_durration - (long)tick_durration) * NANOS_PER_SEC};
+    timespec wait_for = {(long)tick_durration, (long)(tick_durration - (long)tick_durration) * NANOS_PER_SEC};
     while (true)
     {
-        int code = clock_nanosleep(CLOCK_REALTIME, 0, &wait_for, NULL); 
+        int code = clock_nanosleep(CLOCK_REALTIME, 0, &wait_for, &wait_for); 
         if(code == 0)
             break;
         else
-            throw code;
+            continue;
     }
-    
     return delta;
 }

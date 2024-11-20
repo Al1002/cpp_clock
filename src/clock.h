@@ -93,11 +93,9 @@ public:
 	 * @return The time elapsed between function calls
 	 *
 	 * @note
-	 * Uses `usleep()` to block the thread while waiting.
+	 * Uses `nanosleep()` to block the thread while waiting.
 	 *
 	 * @param tick_durration The time to wait, in secconds
 	 */
 	double delta_time(double tick_durration);
-
-
 };
