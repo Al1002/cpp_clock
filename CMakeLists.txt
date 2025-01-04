@@ -1,9 +1,12 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20)
 
-project(cpp_clock VERSION 1.0)
+project(cpp_clock VERSION 1.2)
 
-set(CXX_STANDARD C++11) # optional
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(CTest)
 
 add_subdirectory(src)
+
+include(cmake/install_script.cmake)

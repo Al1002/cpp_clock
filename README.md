@@ -1,15 +1,17 @@
-# CPP CLOCK (V1.1)
+# CPP CLOCK (V1.2)
 
-A C++ Unix-based class for tracking real time.
+A C++ class for tracking real time. Includes Unix and MinGW implementation.
 
 Includes class `Clock`. It tracks real time (not thread time).
 
 Use with:
 `#include <clock.h>`
 
-Sample usage provided in src/test.cpp
+Sample usage provided in src/test.cpp.
 
-Includes CMake files for compiling and running the test file.
+Includes CMake files for compiling and running the test file, and CMake installation.
+
+The CMake package name is titled `clock` and contains the library `clock`. Use in CMake with `find_package(clock)`. 
 
 Already compiled library + header in output.zip. Note: May not work with your environment.
 

@@ -28,27 +28,42 @@
 
 #pragma once
 #include <time.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 /**
  * @brief A clock that can be used for measuring time and limiting loop speed.
- * 			Has: `start_timer()`, `stop_timer()`, `get_time()`
+ * 			Has: `start_timer()`, `stop_timer()`, `get_time()`, `resume_timer()`, `delta_time()`
  * @note
  * Note(s): Works with RTC, NOT thread time; Uses time since system start,
  * aka may break if OS has not been rebooted for a looong time.
  */
 class Clock
 {
-	const static long NANOS_PER_SEC = 1000000000;
-	const static long MICROS_PER_SEC = 1000000;
+	const static long NANOS_PER_SEC 	= 1000000000;
+	const static long MICROS_PER_SEC 	= 1000000;
+    const static long MILIS_PER_SEC		= 1000;
+	// past - when the timer was last started, present - static place to load current time, stop - when the timer was stopped
+#ifdef __linux__
 	timespec past, present, stop;
+#elif defined(_WIN32)
+	LARGE_INTEGER past, present, stop;
+    LARGE_INTEGER frequency;
+#endif
 	double delta;
 	bool stopped = false;
 
 public:
 
 	/**
+	 * @brief Timer will start on creation.
+	 * 
+	 */
+	Clock();
+	
+	/**
 	 * @brief Starts the timer.
-	 *
 	 * \sa `Clock::stop_timer()`
 	 */
 	void start_timer();
@@ -56,9 +71,7 @@ public:
 	/**
 	 * @brief Will stop the timer. If the timer already stoped, does nothing.
 	 * When another time function is called, it will act as if the time of the stop is current time.
-	 *
 	 * @return Time since last start, 0 if timer is stopped.
-	 *
 	 * \sa `Clock::start_timer()`
 	 * \sa `Clock::resume_timer()`
 	 */
@@ -66,7 +79,6 @@ public:
 
 	/**
 	 * @brief Returns time elapsed since the timer was started.
-	 *
 	 * @return Time elapsed, in seconds
 	 */
 	double get_time();
@@ -74,9 +86,7 @@ public:
 	/**
 	 * @brief Will resume the timer.
 	 * When another time function is called, will act as if the time, durring which the timer was stopped, didnt exist.
-	 *
 	 * @return The time for which the clock was stopped, in seconds, or 0 if the timer wasnt stopped.
-	 *
 	 * \sa `Clock::stop_timer()`
 	 */
 	double resume_timer();
@@ -88,14 +98,10 @@ public:
 	 * at least `tick_duration` seconds to have elapsed before returning,
 	 * while blocking the thread.
 	 * Use for rapid time checking and setting iteration rate (ex: for loop).
-	 * Up to 10 micros inaccuracy.
-	 *
 	 * @return The time elapsed between function calls
-	 *
 	 * @note
-	 * Uses `nanosleep()` to block the thread while waiting.
-	 *
-	 * @param tick_durration The time to wait, in secconds
+	 * @param tick_durration The time to wait, in seconds
 	 */
-	double delta_time(double tick_durration);
+	double delta_time(double tick_durration = -1 );
+
 };

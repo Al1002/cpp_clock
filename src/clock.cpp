@@ -31,7 +31,16 @@
 #include <unistd.h>
 
 /**
- * @brief Starts the timer.
+ * @brief Timer will start on creation.
+ * 
+ */
+Clock::Clock()
+{
+    start_timer();
+}
+
+/**
+ * @brief (Re)Starts the timer.
  *
  * \sa `Clock::stop_timer()`
  */
@@ -57,19 +66,18 @@ double Clock::stop_timer()
         return 0;
     stopped = true;
     clock_gettime(CLOCK_REALTIME, &stop); // get delta w/o deleting `present`
-    delta = (stop.tv_sec - past.tv_sec) + (double)(stop.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
-    return (stop.tv_sec - present.tv_sec) + (double)(stop.tv_nsec - present.tv_nsec) / NANOS_PER_SEC;
+    return (stop.tv_sec - past.tv_sec) + (double)(stop.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
 }
 
 /**
- * @brief Returns time elapsed since the timer was started.
+ * @brief Returns time elapsed since the timer was started, in seconds.
  *
  * @return Time elapsed, in seconds
  */
 double Clock::get_time()
 {
     if (stopped)
-        return delta;
+        return (stop.tv_sec - past.tv_sec) + (double)(stop.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
     clock_gettime(CLOCK_REALTIME, &present);
     return (present.tv_sec - past.tv_sec) + (double)(present.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
 }
@@ -87,18 +95,10 @@ double Clock::resume_timer()
     if (!stopped)
         return 0;
     stopped = false;
-    timespec temp;
-    clock_gettime(CLOCK_REALTIME, &temp); // get delta w/o deleting other times
-    delta = (temp.tv_sec - stop.tv_sec) + (double)(temp.tv_nsec - stop.tv_nsec) / NANOS_PER_SEC;
-    present.tv_sec += temp.tv_sec - stop.tv_sec; // adjust `present`
-    present.tv_nsec += temp.tv_nsec - stop.tv_nsec;
-    if (present.tv_nsec >= NANOS_PER_SEC)
-    {
-        present.tv_nsec -= NANOS_PER_SEC;
-        present.tv_sec++;
-    }
-    past.tv_sec += temp.tv_sec - stop.tv_sec; // adjust `past`
-    past.tv_nsec += temp.tv_nsec - stop.tv_nsec;
+    clock_gettime(CLOCK_REALTIME, &present);
+    delta = (present.tv_sec - stop.tv_sec) + (double)(present.tv_nsec - stop.tv_nsec) / NANOS_PER_SEC;
+    past.tv_sec += present.tv_sec - stop.tv_sec; // adjust `past`
+    past.tv_nsec += present.tv_nsec - stop.tv_nsec;
     if (past.tv_nsec >= NANOS_PER_SEC)
     {
         past.tv_nsec -= NANOS_PER_SEC;
@@ -111,36 +111,45 @@ double Clock::resume_timer()
  * @brief Returns the durration since
  * the timer was started, in seconds,
  * then restarts the timer. Will wait for
- * at least `tick_duration` seconds to have elapsed before returning,
+ * at least `tick_duration` seconds to have elapsed since the timer was started before returning,
  * while blocking the thread.
  * Use for rapid time checking and setting iteration rate (ex: for loop).
- * Up to 10 micros inaccuracy.
  *
  * @return The time elapsed between function calls
  *
  * @note
- * Uses `nanosleep()` to block the thread while waiting.
+ * Uses `usleep()` to block the thread while waiting.
  *
  * @param tick_durration The time to wait, in secconds
  */
-double Clock::delta_time(double tick_durration = -1)
+double Clock::delta_time(double tick_durration)
 {
     if (stopped)
         return delta;
-    if (tick_durration == -1)
+    if (tick_durration <= 0)
     {
         clock_gettime(CLOCK_REALTIME, &present);
-        return 0;
+        delta = (present.tv_sec - past.tv_sec) + (double)(present.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
+        past = present;
+        return delta;
     }
-    past = present;
-    timespec wait_for = {(long)tick_durration, (long)(tick_durration - (long)tick_durration) * NANOS_PER_SEC};
+    timespec wait_for = {past.tv_sec + (long)tick_durration, 0};
+    wait_for.tv_nsec = past.tv_nsec + (long long)((tick_durration - (long)tick_durration) * NANOS_PER_SEC);
+    if(wait_for.tv_nsec >= NANOS_PER_SEC)
+    {
+        wait_for.tv_nsec -= NANOS_PER_SEC;
+        wait_for.tv_sec ++;
+    }
     while (true)
     {
-        int code = clock_nanosleep(CLOCK_REALTIME, 0, &wait_for, &wait_for); 
+        int code = clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &wait_for, NULL); 
         if(code == 0)
             break;
         else
             continue;
     }
+    clock_gettime(CLOCK_REALTIME, &present);
+    delta = (present.tv_sec - past.tv_sec) + (double)(present.tv_nsec - past.tv_nsec) / NANOS_PER_SEC;
+    past = present;
     return delta;
 }
