@@ -26,7 +26,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "clock.h"
+#include "clock.hpp"
 #include <time.h>
 #include <unistd.h>
 

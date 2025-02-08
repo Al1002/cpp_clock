@@ -8,7 +8,6 @@ target_include_directories(clock PUBLIC
     $<INSTALL_INTERFACE:include/clock>
 )
 
-
 message("BUILD_TESTING: ${BUILD_TESTING}")
 if(BUILD_TESTING)
     add_executable(test1 test.cpp)

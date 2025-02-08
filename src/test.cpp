@@ -3,7 +3,7 @@
 #include <iostream> // cout
 #include <unistd.h> // time
 
-#include <clock.h> // library
+#include <clock.hpp> // library
 
 int main()
 {
