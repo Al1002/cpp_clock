@@ -10,3 +10,4 @@ include(CTest)
 add_subdirectory(src)
 
 include(cmake/install_script.cmake)
+include(cmake/cpack_script.cmake)

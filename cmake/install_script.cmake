@@ -24,3 +24,4 @@ install(FILES
     cmake/clockConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/clockConfigVersion.cmake
     DESTINATION lib/cmake/clock)
+
