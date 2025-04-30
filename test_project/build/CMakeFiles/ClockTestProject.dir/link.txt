@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/ClockTestProject.dir/main.cpp.o -o ClockTestProject  /usr/lib/libclock.a 
