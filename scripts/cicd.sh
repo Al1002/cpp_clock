@@ -1,3 +1,4 @@
+cd ..
 rm -rf build
 cmake -S . -B build
 cd build

@@ -1,6 +1,6 @@
 # CPP CLOCK (V1.3)
 
-A C++ class for tracking real time. Includes Unix and MinGW implementation.
+A C++ class for tracking real time. Includes Unix and Windows implementation.
 
 Includes class `Clock`. It tracks real time (not thread time).
 
