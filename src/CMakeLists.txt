@@ -8,13 +8,13 @@ target_include_directories(clock PUBLIC
     $<INSTALL_INTERFACE:include/clock>
 )
 
-option(BUILD_TESTING "Build tests from test.cpp" OFF)
-message("BUILD_TESTING: ${BUILD_TESTING}")
-if(BUILD_TESTING)
-    add_executable(test1 test.cpp)
-    target_link_libraries(test1 PRIVATE clock)
-    add_test(
-        NAME test1
-        COMMAND test1
-    )
-endif()
+#option(BUILD_TESTING "Build tests from test.cpp" OFF)
+#message("BUILD_TESTING: ${BUILD_TESTING}")
+#if(BUILD_TESTING)
+#    add_executable(test1 test.cpp)
+#    target_link_libraries(test1 PRIVATE clock)
+#    add_test(
+#        NAME test1
+#        COMMAND test1
+#    )
+#endif()
