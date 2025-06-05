@@ -5,7 +5,7 @@ project(ClockTestProject)
 set(CMAKE_CXX_STANDARD 17)
 
 # Find the cpp_clock package
-find_package(clock REQUIRED)
+find_package(clock CONFIG REQUIRED)
 
 # Create executable
 add_executable(ClockTestProject main.cpp)
