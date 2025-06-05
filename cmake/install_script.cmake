@@ -12,7 +12,7 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/src/
 install(EXPORT clockTargets
     FILE clockTargets.cmake
     NAMESPACE clock::
-    DESTINATION share/cmake/clock)
+    DESTINATION share/clock)
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
@@ -23,5 +23,5 @@ write_basic_package_version_file(
 install(FILES 
     cmake/clockConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/clockConfigVersion.cmake
-    DESTINATION share/cmake/clock)
+    DESTINATION share/clock)
 
